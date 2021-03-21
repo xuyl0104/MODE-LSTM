@@ -236,19 +236,16 @@ def write_statistics(data, name, filename):
             u'max length is {} , min length is {} , average length is {}\n'.format(data[2][0], data[2][1], data[2][2]))
 
 
-def prepro_sst(source_dir, target_dir, glove_path, \
-               glove_vocab=None, mode=1, if_contain_phrase=False):
-    print('Process sst{} dataset...'.format(mode))
+def prepro_sst(source_dir, target_dir, glove_path, glove_vocab=None, mode=1, if_contain_phrase=False):
+    print('Process yelp{} dataset...'.format(mode))
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
     # load dataset
-    name = 'fine' if mode == 1 else 'binary'
-    if not if_contain_phrase:
-        train_set, num_labels = load_data(os.path.join(source_dir, 'stsa.{}.train'.format(name)))
-    else:
-        train_set, num_labels = load_data(os.path.join(source_dir, 'stsa.all.train'.format(name)))
-    dev_set, _ = load_data(os.path.join(source_dir, 'stsa.{}.dev'.format(name)))
-    test_set, _ = load_data(os.path.join(source_dir, 'stsa.{}.test'.format(name)))
+    name = 'all' if mode == 1 else 'len10'
+    train_set, num_labels = load_data(os.path.join(source_dir, 'yelp_{}_train.txt'.format(name)))
+    dev_set, _ = load_data(os.path.join(source_dir, 'yelp_{}_dev.txt'.format(name)))
+    test_set, _ = load_data(os.path.join(source_dir, 'yelp_{}_test.txt'.format(name)))
+
     # print dataset base information
     datasize, sen_info, word_info = statistics_info(train_set + dev_set + test_set)
     write_statistics([datasize, sen_info, word_info], name, filename=os.path.join(target_dir, 'stat.info'))
@@ -264,12 +261,16 @@ def prepro_sst(source_dir, target_dir, glove_path, \
 
 
 if __name__ == '__main__':
-    folder_name = 'sst5'
-    dataset_name = 'sst5'
+    folder_name = 'yelp'
+    dataset_name = 'yelp'
     # data_dir = '/home/janady/retrieval_model/model/mode-lstm/global_cnn-master/data'
-    source_dir = 'data/sst5'
-    target_dir = 'data/sst5/embeddings'
-    glove_path = os.path.join(source_dir, 'glove.840B.300d.txt')
+    source_dir = 'data/yelp'
+    target_dir = 'data/yelp/embeddings'
+    glove_path = os.path.join(source_dir, 'glove.6B.50d.txt')
+    # glove_path = os.path.join(source_dir, 'glove.840B.300d.txt')
     glove_vocab = load_glove_vocab(glove_path)
+
     # process sst5 dataset
-    prepro_sst(source_dir, target_dir, glove_path, glove_vocab, mode=1, if_contain_phrase=True)
+    prepro_sst(source_dir, target_dir, glove_path, glove_vocab, mode=1, if_contain_phrase=False)
+
+    print("processing done...")
