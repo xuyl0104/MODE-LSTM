@@ -36,10 +36,10 @@ dataset parameters
 # TODO
 embedding_dim = 300  # the dimension of word embedding
 char_embedding_dim = 50  # the dimension of char embedding
-s_maxlen = 53  # the maximun length of sentence
-w_maxlen = 38  # the maximun length of word
-num_class = 5
-char_size = 42
+s_maxlen = 20  # the maximun length of sentence
+w_maxlen = 18  # the maximun length of word
+num_class = 2
+char_size = 44
 
 '''
 model parameters
@@ -61,16 +61,19 @@ width = 3  # kernel size of conv
 ''' 
 train parameters
 '''
-epochs = 25
+# TODO
+epochs = 10
 tune_epochs = 5
-batch_size = 200
+# epochs = 25
+# tune_epochs = 5
+batch_size = 256
 lr = 0.001
 tune_lr = 1e-4
 
 '''
 Input
 '''
-data_root = 'data/sst5/embeddings/'
+data_root = 'data/yelp/embeddings/'
 vector_path = data_root + 'glove.filtered.npz'
 train_path = data_root + 'train_word2idx.json'
 dev_path = data_root + 'dev_word2idx.json'
@@ -261,11 +264,6 @@ if __name__ == "__main__":
           ' recurrent_dropout : ' + str(recurrent_dropout) + ' output_dropout : ' + str(output_dropout))
     print('\n')
 
-    # save_path = str(char_emb_dropout)+'_'+str(emb_dropout)+'_'+str(units)
-
-    # if not os.path.exists(save_path):
-    # 	os.makedirs(save_path)
-
     loss, modelstm_model = model(scales, scale_nums, units, emb_dropout, char_emb_dropout, output_dropout)
 
     one_hot_label_train = keras.utils.to_categorical(train_label, num_class)
@@ -280,8 +278,12 @@ if __name__ == "__main__":
                                  callbacks=[callback_test([test_sen, test_word], one_hot_label_test)]
                                  )
 
-    # save_name = os.path.join(save_path, 'static.h5')
-    # modelstm_model.save(save_name)
+    # save the model
+    save_path = "save/yelp_bs" + str(batch_size)
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    save_name = os.path.join(save_path, 'mode-lstm')
+    modelstm_model.save_weights(save_name)
 
     acc_loss = history.history['loss']
     acc = history.history['acc']
@@ -306,8 +308,9 @@ if __name__ == "__main__":
                                  callbacks=[callback_test([test_sen, test_word], one_hot_label_test)]
                                  )
 
-    # save_name = os.path.join(save_path, 'finetune.h5')
-    # modelstm_model.save(save_name)
+    # save the fine-tuned model
+    save_name = os.path.join(save_path, 'fine_mode-lstm')
+    modelstm_model.save_weights(save_name)
 
     acc_loss += history.history['loss']
     acc += history.history['acc']
@@ -324,3 +327,5 @@ if __name__ == "__main__":
 
     K.clear_session()
     tf.reset_default_graph()
+
+    print("End of yelp training...")

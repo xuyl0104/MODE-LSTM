@@ -236,7 +236,7 @@ def write_statistics(data, name, filename):
             u'max length is {} , min length is {} , average length is {}\n'.format(data[2][0], data[2][1], data[2][2]))
 
 
-def prepro_sst(source_dir, target_dir, glove_path, glove_vocab=None, mode=1, if_contain_phrase=False):
+def prepro_yelp(source_dir, target_dir, glove_path, glove_vocab=None, mode=1, if_contain_phrase=False):
     print('Process yelp{} dataset...'.format(mode))
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
@@ -263,14 +263,14 @@ def prepro_sst(source_dir, target_dir, glove_path, glove_vocab=None, mode=1, if_
 if __name__ == '__main__':
     folder_name = 'yelp'
     dataset_name = 'yelp'
-    # data_dir = '/home/janady/retrieval_model/model/mode-lstm/global_cnn-master/data'
     source_dir = 'data/yelp'
     target_dir = 'data/yelp/embeddings'
-    glove_path = os.path.join(source_dir, 'glove.6B.50d.txt')
+    # glove_path = os.path.join(source_dir, 'glove.6B.50d.txt')
     # glove_path = os.path.join(source_dir, 'glove.840B.300d.txt')
+    glove_path = os.path.join('data', 'glove.840B.300d.txt')  # all datasets share the same copy of glove
     glove_vocab = load_glove_vocab(glove_path)
 
-    # process sst5 dataset
-    prepro_sst(source_dir, target_dir, glove_path, glove_vocab, mode=1, if_contain_phrase=False)
+    # process yelp dataset
+    prepro_yelp(source_dir, target_dir, glove_path, glove_vocab, mode=1, if_contain_phrase=False)
 
     print("processing done...")
